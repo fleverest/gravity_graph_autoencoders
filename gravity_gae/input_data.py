@@ -16,8 +16,8 @@ def load_data(dataset):
     node_index=0
     with open(dataset) as adjlist:
         for row in adjlist:
-            row = list(map(int,row.split('\t')))
-            source = row[0][0]
+            row = row.split('\t')
+            source = row[0]
             if source not in node_map.keys():
                 node_map[source] = node_index
                 node_index +=1
