@@ -32,7 +32,7 @@ def load_data(dataset):
     nNodes = len(node_map.keys())
     adj = sp.coo_matrix(
         (
-            np.ones(len(edge_index[0])), 
+            np.ones(len(edge_index[0]),dtype=np.int8), 
             (edge_index[0], edge_index[1])
         ), 
         shape=(nNodes, nNodes))
