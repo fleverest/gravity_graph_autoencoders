@@ -1,6 +1,6 @@
 from __future__ import division
 from __future__ import print_function
-from gravity_gae.evaluation import compute_scores
+from gravity_gae.evaluation import compute_scores, gravity_gcn_vae_predict
 from gravity_gae.input_data import load_data
 from gravity_gae.model import *
 from gravity_gae.optimizer import OptimizerAE, OptimizerVAE
@@ -100,11 +100,21 @@ mean_roc = []
 mean_ap = []
 mean_time = []
 
-
+    
 # Load graph dataset
 if FLAGS.verbose:
     print("Loading data...")
-adj_init, features = load_data(FLAGS.dataset)
+adj_init, features, ordering = load_data(FLAGS.dataset)
+
+# Load public test set
+if FLAGS.verbose:
+    print("Loading public test...")
+test_edges = []
+with open(FLAGS.testset) as testfile:
+    testfile.readline()
+    for line in testfile:
+        line = line.split('\t')
+        test_edges.append((line[1], line[2]))
 
 
 # The entire training process is repeated FLAGS.nb_run times
@@ -273,3 +283,20 @@ print("Mean AP score: ", np.mean(mean_ap),
 print("Running times\n", mean_time)
 print("Mean running time: ", np.mean(mean_time),
       "\nStd of running time: ", np.std(mean_time), "\n \n")
+
+
+print("Making public test predictions...")
+with open('Gravity predictions.csv') as predictfile:
+    predictfile.write('Id,Predicted\n')
+    i=0
+    for edge in test_edges:
+        e1 = ordering.index(edge[0])
+        e2 = ordering.index(edge[1])
+        prediction = gravity_gcn_vae_predict((e1,e2),emb)
+        i+=1
+        predictfile.write(i)
+        predictfile.write(',')
+        predictfile.write(prediction)
+        predictfile.write('\n')
+print("Completed.")
+        

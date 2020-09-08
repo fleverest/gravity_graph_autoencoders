@@ -13,6 +13,15 @@ def sigmoid(x):
     """
     return 1 / (1 + np.exp(-x))
 
+def gravity_gcn_vae_predict(e,emb):
+    # Link Prediction on positive pairs
+    dist = np.square(epsilon +
+                        np.linalg.norm(emb[e[0],0:(dim-1)]
+                                    - emb[e[1],0:(dim-1)],ord=2))
+    # Prediction = sigmoid(mass - lambda*log(distance))
+    return sigmoid(emb[e[1],dim-1] - FLAGS.lamb*np.log(dist))
+
+
 def compute_scores(edges_pos, edges_neg, emb):
     """ Computes AUC ROC and AP scores from embeddings vectors, and from
     ground-truth lists of positive and negative node pairs
