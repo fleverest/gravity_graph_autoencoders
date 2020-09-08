@@ -19,7 +19,7 @@ class OptimizerAE(object):
                                                      targets = labels_sub,
                                                      pos_weight = pos_weight))
         # Adam Optimizer
-        self.optimizer = tf.train.AdamOptimizer(learning_rate = FLAGS.learning_rate)
+        self.optimizer = tf.train.AdamOptimizer(learning_rate = 0.1)
         self.opt_op = self.optimizer.minimize(self.cost)
         self.grads_vars = self.optimizer.compute_gradients(self.cost)
         self.correct_prediction = \
@@ -38,7 +38,7 @@ class OptimizerVAE(object):
                                                      targets = labels_sub,
                                                      pos_weight = pos_weight))
         # Adam Optimizer
-        self.optimizer = tf.train.AdamOptimizer(learning_rate = FLAGS.learning_rate)
+        self.optimizer = tf.train.AdamOptimizer(learning_rate = 0.1)
         # Latent loss
         self.log_lik = self.cost
         self.kl = (0.5 / num_nodes) * \

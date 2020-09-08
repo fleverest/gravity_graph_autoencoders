@@ -132,9 +132,9 @@ class SourceTargetInnerProductDecoder(Layer):
     def _call(self, inputs):
         inputs = tf.nn.dropout(inputs, 1 - self.dropout)
         # Source vector = First half of embedding vector
-        inputs_source = inputs[:, 0:int(FLAGS.dimension/2)]
+        inputs_source = inputs[:, 0:int(32/2)]
         # Target vector = Second half of embedding vector
-        inputs_target = inputs[:, int(FLAGS.dimension/2):FLAGS.dimension]
+        inputs_target = inputs[:, int(32/2):32]
         # Source-Target decoding
         x = tf.matmul(inputs_source, inputs_target, transpose_b = True)
         x = tf.reshape(x, [-1])
@@ -155,17 +155,17 @@ class GravityInspiredDecoder(Layer):
         # Embedding vector = all dimensions on input except the last
         # Mass parameter = last dimension of input
         if self.normalize:
-            inputs_z = tf.math.l2_normalize(inputs[:,0:(FLAGS.dimension - 1)],
+            inputs_z = tf.math.l2_normalize(inputs[:,0:(32 - 1)],
                                             axis = 1)
         else:
-            inputs_z = inputs[:, 0:(FLAGS.dimension - 1)]
+            inputs_z = inputs[:, 0:(32 - 1)]
         # Get pairwise node distances in embedding
-        dist = pairwise_distance(inputs_z, FLAGS.epsilon)
+        dist = pairwise_distance(inputs_z, 0.01)
         # Get mass parameter
-        inputs_mass = inputs[:,(FLAGS.dimension - 1):FLAGS.dimension]
+        inputs_mass = inputs[:,(32 - 1):32]
         mass = tf.matmul(tf.ones([tf.shape(inputs_mass)[0],1]),tf.transpose(inputs_mass))
         # Gravity-Inspired decoding
-        outputs = mass - tf.scalar_mul(FLAGS.lamb, tf.log(dist))
+        outputs = mass - tf.scalar_mul(1., tf.log(dist))
         outputs = tf.reshape(outputs,[-1])
         outputs = self.act(outputs)
         return outputs

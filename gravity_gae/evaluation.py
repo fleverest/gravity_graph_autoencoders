@@ -19,7 +19,7 @@ def gravity_gcn_vae_predict(e,emb):
                         np.linalg.norm(emb[e[0],0:(dim-1)]
                                     - emb[e[1],0:(dim-1)],ord=2))
     # Prediction = sigmoid(mass - lambda*log(distance))
-    return sigmoid(emb[e[1],dim-1] - FLAGS.lamb*np.log(dist))
+    return sigmoid(emb[e[1],dim-1] - 1.*np.log(dist))
 
 
 def compute_scores(edges_pos, edges_neg, emb):
@@ -31,44 +31,23 @@ def compute_scores(edges_pos, edges_neg, emb):
     :param emb: n*d matrix of embedding vectors for all graph nodes
     :return: Area Under ROC Curve (AUC ROC) and Average Precision (AP) scores
     """
-    dim = FLAGS.dimension # Embedding dimension
-    epsilon = FLAGS.epsilon # For numerical stability (see layers.py file)
+    dim = 32 # Embedding dimension
+    epsilon = 0.01 # For numerical stability (see layers.py file)
     preds = []
     preds_neg = []
-
-    # Standard Graph AE/VAE
-    if FLAGS.model in ('gcn_ae', 'gcn_vae'):
-        for e in edges_pos:
-            # Link Prediction on positive pairs
-            preds.append(sigmoid(emb[e[0],:].dot(emb[e[1],:].T)))
-        for e in edges_neg:
-            # Link Prediction on negative pairs
-            preds_neg.append(sigmoid(emb[e[0],:].dot(emb[e[1],:].T)))
-
-    # Source-Target Graph AE/VAE
-    elif FLAGS.model in ('source_target_gcn_ae', 'source_target_gcn_vae'):
-        for e in edges_pos:
-            # Link Prediction on positive pairs
-            preds.append(sigmoid(emb[e[0],0:int(dim/2)].dot(emb[e[1],int(dim/2):dim].T)))
-        for e in edges_neg:
-            # Link Prediction on negative pairs
-            preds_neg.append(sigmoid(emb[e[0],0:int(dim/2)].dot(emb[e[1],int(dim/2):dim].T)))
-
-    # Gravity-Inspired Graph AE/VAE
-    elif FLAGS.model in ('gravity_gcn_ae', 'gravity_gcn_vae'):
-        for e in edges_pos:
-            # Link Prediction on positive pairs
-            dist = np.square(epsilon +
-                             np.linalg.norm(emb[e[0],0:(dim-1)]
-                                            - emb[e[1],0:(dim-1)],ord=2))
-            # Prediction = sigmoid(mass - lambda*log(distance))
-            preds.append(sigmoid(emb[e[1],dim-1] - FLAGS.lamb*np.log(dist)))
-        for e in edges_neg:
-            # Link Prediction on negative pairs
-            dist = np.square(epsilon +
-                             np.linalg.norm(emb[e[0],0:(dim-1)]
-                                            - emb[e[1],0:(dim-1)],ord=2))
-            preds_neg.append(sigmoid(emb[e[1],dim-1] - FLAGS.lamb*np.log(dist)))
+    for e in edges_pos:
+        # Link Prediction on positive pairs
+        dist = np.square(epsilon +
+                            np.linalg.norm(emb[e[0],0:(dim-1)]
+                                        - emb[e[1],0:(dim-1)],ord=2))
+        # Prediction = sigmoid(mass - lambda*log(distance))
+        preds.append(sigmoid(emb[e[1],dim-1] - 1.*np.log(dist)))
+    for e in edges_neg:
+        # Link Prediction on negative pairs
+        dist = np.square(epsilon +
+                            np.linalg.norm(emb[e[0],0:(dim-1)]
+                                        - emb[e[1],0:(dim-1)],ord=2))
+        preds_neg.append(sigmoid(emb[e[1],dim-1] - 1.*np.log(dist)))
 
     # Stack all predictions and labels
     preds_all = np.hstack([preds, preds_neg])
