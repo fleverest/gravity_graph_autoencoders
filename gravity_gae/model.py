@@ -61,15 +61,15 @@ class GCNModelAE(Model):
 
     def _build(self):
         self.hidden = GraphConvolutionSparse(input_dim = self.input_dim,
-                                             output_dim = FLAGS.hidden,
+                                             output_dim = 64,
                                              adj = self.adj,
                                              features_nonzero = self.features_nonzero,
                                              act = tf.nn.relu,
                                              dropout = self.dropout,
                                              logging = self.logging)(self.inputs)
 
-        self.z_mean = GraphConvolution(input_dim = FLAGS.hidden,
-                                       output_dim = FLAGS.dimension,
+        self.z_mean = GraphConvolution(input_dim = 64,
+                                       output_dim = 32,
                                        adj = self.adj,
                                        act = lambda x: x,
                                        dropout = self.dropout,
@@ -97,28 +97,28 @@ class GCNModelVAE(Model):
 
     def _build(self):
         self.hidden = GraphConvolutionSparse(input_dim = self.input_dim,
-                                             output_dim = FLAGS.hidden,
+                                             output_dim = 64,
                                              adj = self.adj,
                                              features_nonzero = self.features_nonzero,
                                              act = tf.nn.relu,
                                              dropout = self.dropout,
                                              logging = self.logging)(self.inputs)
 
-        self.z_mean = GraphConvolution(input_dim = FLAGS.hidden,
-                                       output_dim = FLAGS.dimension,
+        self.z_mean = GraphConvolution(input_dim = 64,
+                                       output_dim = 32,
                                        adj = self.adj,
                                        act = lambda x: x,
                                        dropout = self.dropout,
                                        logging = self.logging)(self.hidden)
 
-        self.z_log_std = GraphConvolution(input_dim = FLAGS.hidden,
-                                          output_dim = FLAGS.dimension,
+        self.z_log_std = GraphConvolution(input_dim = 64,
+                                          output_dim = 32,
                                           adj = self.adj,
                                           act = lambda x: x,
                                           dropout = self.dropout,
                                           logging = self.logging)(self.hidden)
 
-        self.z = self.z_mean + tf.random_normal([self.n_samples, FLAGS.dimension]) * tf.exp(self.z_log_std)
+        self.z = self.z_mean + tf.random_normal([self.n_samples, 32]) * tf.exp(self.z_log_std)
 
         self.reconstructions = InnerProductDecoder(act = lambda x: x,
                                                    logging = self.logging)(self.z)
@@ -140,15 +140,15 @@ class SourceTargetGCNModelAE(Model):
 
     def _build(self):
         self.hidden = GraphConvolutionSparse(input_dim = self.input_dim,
-                                             output_dim = FLAGS.hidden,
+                                             output_dim = 64,
                                              adj = self.adj,
                                              features_nonzero = self.features_nonzero,
                                              act = tf.nn.relu,
                                              dropout = self.dropout,
                                              logging = self.logging)(self.inputs)
 
-        self.z_mean = GraphConvolution(input_dim = FLAGS.hidden,
-                                       output_dim = FLAGS.dimension,
+        self.z_mean = GraphConvolution(input_dim = 64,
+                                       output_dim = 32,
                                        adj = self.adj,
                                        act = lambda x: x,
                                        dropout = self.dropout,
@@ -175,28 +175,28 @@ class SourceTargetGCNModelVAE(Model):
 
     def _build(self):
         self.hidden = GraphConvolutionSparse(input_dim = self.input_dim,
-                                             output_dim = FLAGS.hidden,
+                                             output_dim = 64,
                                              adj = self.adj,
                                              features_nonzero = self.features_nonzero,
                                              act = tf.nn.relu,
                                              dropout = self.dropout,
                                              logging = self.logging)(self.inputs)
 
-        self.z_mean = GraphConvolution(input_dim = FLAGS.hidden,
-                                       output_dim = FLAGS.dimension,
+        self.z_mean = GraphConvolution(input_dim = 64,
+                                       output_dim = 32,
                                        adj = self.adj,
                                        act = lambda x: x,
                                        dropout = self.dropout,
                                        logging = self.logging)(self.hidden)
 
-        self.z_log_std = GraphConvolution(input_dim = FLAGS.hidden,
-                                          output_dim = FLAGS.dimension,
+        self.z_log_std = GraphConvolution(input_dim = 64,
+                                          output_dim = 32,
                                           adj = self.adj,
                                           act = lambda x: x,
                                           dropout = self.dropout,
                                           logging = self.logging)(self.hidden)
 
-        self.z = self.z_mean + tf.random_normal([self.n_samples, FLAGS.dimension]) * tf.exp(self.z_log_std)
+        self.z = self.z_mean + tf.random_normal([self.n_samples, 32]) * tf.exp(self.z_log_std)
 
         self.reconstructions = SourceTargetInnerProductDecoder(act = lambda x: x,
                                                                logging = self.logging)(self.z)
@@ -218,22 +218,22 @@ class GravityGCNModelAE(Model):
 
     def _build(self):
         self.hidden = GraphConvolutionSparse(input_dim = self.input_dim,
-                                             output_dim = FLAGS.hidden,
+                                             output_dim = 64,
                                              adj = self.adj,
                                              features_nonzero = self.features_nonzero,
                                              act = tf.nn.relu,
                                              dropout = self.dropout,
                                              logging = self.logging)(self.inputs)
 
-        self.z_mean = GraphConvolution(input_dim = FLAGS.hidden,
-                                       output_dim = FLAGS.dimension,
+        self.z_mean = GraphConvolution(input_dim = 64,
+                                       output_dim = 32,
                                        adj = self.adj,
                                        act = lambda x: x,
                                        dropout = self.dropout,
                                        logging = self.logging)(self.hidden)
 
         self.reconstructions = GravityInspiredDecoder(act = lambda x: x,
-                                                      normalize = FLAGS.normalize,
+                                                      normalize = False,
                                                       logging = self.logging)(self.z_mean)
 
 
@@ -254,29 +254,29 @@ class GravityGCNModelVAE(Model):
 
     def _build(self):
         self.hidden = GraphConvolutionSparse(input_dim = self.input_dim,
-                                             output_dim = FLAGS.hidden,
+                                             output_dim = 64,
                                              adj = self.adj,
                                              features_nonzero = self.features_nonzero,
                                              act = tf.nn.relu,
                                              dropout = self.dropout,
                                              logging = self.logging)(self.inputs)
 
-        self.z_mean = GraphConvolution(input_dim = FLAGS.hidden,
-                                       output_dim = FLAGS.dimension,
+        self.z_mean = GraphConvolution(input_dim = 64,
+                                       output_dim = 32,
                                        adj = self.adj,
                                        act = lambda x: x,
                                        dropout = self.dropout,
                                        logging = self.logging)(self.hidden)
 
-        self.z_log_std = GraphConvolution(input_dim = FLAGS.hidden,
-                                          output_dim = FLAGS.dimension,
+        self.z_log_std = GraphConvolution(input_dim = 64,
+                                          output_dim = 32,
                                           adj = self.adj,
                                           act = lambda x: x,
                                           dropout = self.dropout,
                                           logging = self.logging)(self.hidden)
 
-        self.z = self.z_mean + tf.random_normal([self.n_samples, FLAGS.dimension]) * tf.exp(self.z_log_std)
+        self.z = self.z_mean + tf.random_normal([self.n_samples, 32]) * tf.exp(self.z_log_std)
 
         self.reconstructions = GravityInspiredDecoder(act = lambda x: x,
-                                                      normalize = FLAGS.normalize,
+                                                      normalize = False,
                                                       logging = self.logging)(self.z)
