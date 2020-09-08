@@ -118,7 +118,7 @@ with open(FLAGS.testset) as testfile:
 
 
 # The entire training process is repeated FLAGS.nb_run times
-for i in range(nb_run):
+for i in range(FLAGS.nb_run):
 
     # Edge Masking: compute Train/Validation/Test set
     if FLAGS.verbose:
