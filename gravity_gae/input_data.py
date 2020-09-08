@@ -1,5 +1,6 @@
 import networkx as nx
 import scipy.sparse as sp
+import numpy as np
 
 def load_data(dataset):
     """ Load datasets from text files
