@@ -134,6 +134,10 @@ def mask_test_edges_general_link_prediction(adj, test_percent=10., val_percent=5
         idx_val_edges_false = np.append(idx_val_edges_false, idx)
 
     # Sanity checks:
+    train_edges = train_edges.astype(np.int64)
+    test_edges = test_edges.astype(np.int64)
+    val_edges = val_edges.astype(np.int64)
+
     train_edges_linear = train_edges[:,0]*adj.shape[0] + train_edges[:,1]
     test_edges_linear = test_edges[:,0]*adj.shape[0] + test_edges[:,1]
     assert not np.any(np.in1d(idx_test_edges_false, positive_idx))
